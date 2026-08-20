@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist ISO 9001:2015 – SGQ</title>
+<style>
+:root{--p:#0f766e;--pd:#0d5f59;--s:#059669;--w:#d97706;--d:#dc2626;--g:#64748b;--bg:#f8fafc;--c:#fff;--t:#1e293b;--b:#e2e8f0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--t);line-height:1.5;padding:1rem}
+.container{max-width:1100px;margin:0 auto}
+header{background:linear-gradient(135deg,var(--p),var(--pd));color:#fff;padding:1.5rem 2rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 4px 12px rgba(15,118,110,.25)}
+header h1{font-size:1.5rem;font-weight:700}
+header p{opacity:.9;margin-top:.3rem;font-size:.95rem}
+.progress-box{background:var(--c);border-radius:10px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid var(--b)}
+.progress-bar-bg{height:12px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin:.6rem 0}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--p),#14b8a6);border-radius:6px;transition:width .4s;width:0%}
+.stats{display:flex;gap:1.5rem;flex-wrap:wrap;font-size:.9rem;color:var(--g)}
+.stats strong{color:var(--t)}
+.controls{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.5rem}
+button{background:var(--p);color:#fff;border:none;padding:.55rem 1.1rem;border-radius:6px;cursor:pointer;font-size:.9rem;font-weight:500}
+button:hover{background:var(--pd)}
+button.sec{background:#64748b}
+button.sec:hover{background:#475569}
+button.dang{background:var(--d)}
+button.dang:hover{background:#b91c1c}
+.clause{background:var(--c);border-radius:10px;margin-bottom:1rem;border:1px solid var(--b);overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.clause-header{background:#f1f5f9;padding:.9rem 1.2rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;user-select:none}
+.clause-header:hover{background:#e2e8f0}
+.arrow{transition:transform .25s;font-size:.85rem}
+.clause.open .arrow{transform:rotate(90deg)}
+.clause-body{display:none;padding:.5rem 1rem 1rem}
+.clause.open .clause-body{display:block}
+.item{border:1px solid var(--b);border-radius:8px;padding:1rem;margin-bottom:.75rem;background:#fafafa}
+.item-title{font-weight:600;margin-bottom:.7rem;color:#0f172a;font-size:.95rem}
+.status-group{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:.8rem}
+.status-group label{display:flex;align-items:center;gap:.3rem;font-size:.85rem;cursor:pointer;padding:.25rem .5rem;border-radius:4px;background:#fff;border:1px solid var(--b)}
+.status-group input{accent-color:var(--p)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+@media(max-width:700px){.fields{grid-template-columns:1fr}}
+.field label{display:block;font-size:.8rem;font-weight:500;color:var(--g);margin-bottom:.2rem}
+.field input,.field textarea{width:100%;padding:.45rem .6rem;border:1px solid var(--b);border-radius:5px;font-size:.9rem;font-family:inherit}
+.field textarea{min-height:60px;resize:vertical}
+.note{background:#ecfdf5;border-left:4px solid var(--p);padding:.8rem 1rem;margin-bottom:1.5rem;border-radius:0 6px 6px 0;font-size:.9rem}
+footer{text-align:center;margin-top:2rem;padding:1rem;font-size:.85rem;color:var(--g)}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Checklist ABNT NBR ISO 9001:2015</h1>
+<p>Sistema de Gestão da Qualidade — Requisitos · Versão prática para implementação e auditoria interna</p>
+</header>
+
+<div class="note">
+<strong>Como usar:</strong> Marque o status de cada requisito, registre evidências e responsável. O progresso é salvo automaticamente no navegador (localStorage). Ideal para autoavaliação, preparação de auditoria e acompanhamento de implementação.
+</div>
+
+<div class="progress-box">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<strong>Progresso geral</strong>
+<span id="progress-text">0%</span>
+</div>
+<div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-bar"></div></div>
+<div class="stats">
+<span>Conforme: <strong id="c-conf">0</strong></span>
+<span>Parcial: <strong id="c-parc">0</strong></span>
+<span>Não conf.: <strong id="c-nao">0</strong></span>
+<span>N/A: <strong id="c-na">0</strong></span>
+<span>Pendentes: <strong id="c-pend">0</strong></span>
+</div>
+</div>
+
+<div class="controls">
+<button onclick="expandAll()">Expandir tudo</button>
+<button onclick="collapseAll()" class="sec">Recolher tudo</button>
+<button onclick="exportData()" class="sec">Exportar JSON</button>
+<button onclick="clearAll()" class="dang">Limpar tudo</button>
+</div>
+
+<div id="checklist"></div>
+
+<footer>
+Checklist baseado na estrutura da ABNT NBR ISO 9001:2015 · Uso interno · Não substitui a norma original<br>
+Progresso salvo localmente no navegador
+</footer>
+</div>
+
+<script>
+const data=[
+{id:"4",title:"4 Contexto da organização",items:[
+{id:"4.1",title:"4.1 Entendendo a organização e seu contexto"},
+{id:"4.2",title:"4.2 Entendendo as necessidades e expectativas de partes interessadas"},
+{id:"4.3",title:"4.3 Determinando o escopo do sistema de gestão da qualidade"},
+{id:"4.4",title:"4.4 Sistema de gestão da qualidade e seus processos"}
+]},
+{id:"5",title:"5 Liderança",items:[
+{id:"5.1.1",title:"5.1.1 Liderança e comprometimento – Generalidades"},
+{id:"5.1.2",title:"5.1.2 Foco no cliente"},
+{id:"5.2.1",title:"5.2.1 Desenvolvendo a política da qualidade"},
+{id:"5.2.2",title:"5.2.2 Comunicando a política da qualidade"},
+{id:"5.3",title:"5.3 Papéis, responsabilidades e autoridades organizacionais"}
+]},
+{id:"6",title:"6 Planejamento",items:[
+{id:"6.1",title:"6.1 Ações para abordar riscos e oportunidades"},
+{id:"6.2",title:"6.2 Objetivos da qualidade e planejamento para alcançá-los"},
+{id:"6.3",title:"6.3 Planejamento de mudanças"}
+]},
+{id:"7",title:"7 Apoio",items:[
+{id:"7.1.1",title:"7.1.1 Recursos – Generalidades"},
+{id:"7.1.2",title:"7.1.2 Pessoas"},
+{id:"7.1.3",title:"7.1.3 Infraestrutura"},
+{id:"7.1.4",title:"7.1.4 Ambiente para a operação dos processos"},
+{id:"7.1.5",title:"7.1.5 Recursos de monitoramento e medição"},
+{id:"7.1.6",title:"7.1.6 Conhecimento organizacional"},
+{id:"7.2",title:"7.2 Competência"},
+{id:"7.3",title:"7.3 Conscientização"},
+{id:"7.4",title:"7.4 Comunicação"},
+{id:"7.5",title:"7.5 Informação documentada"}
+]},
+{id:"8",title:"8 Operação",items:[
+{id:"8.1",title:"8.1 Planejamento e controle operacionais"},
+{id:"8.2.1",title:"8.2.1 Comunicação com o cliente"},
+{id:"8.2.2",title:"8.2.2 Determinação de requisitos relativos a produtos e serviços"},
+{id:"8.2.3",title:"8.2.3 Análise crítica de requisitos relativos a produtos e serviços"},
+{id:"8.2.4",title:"8.2.4 Mudanças nos requisitos para produtos e serviços"},
+{id:"8.3",title:"8.3 Projeto e desenvolvimento de produtos e serviços"},
+{id:"8.4",title:"8.4 Controle de processos, produtos e serviços providos externamente"},
+{id:"8.5.1",title:"8.5.1 Controle de produção e de provisão de serviço"},
+{id:"8.5.2",title:"8.5.2 Identificação e rastreabilidade"},
+{id:"8.5.3",title:"8.5.3 Propriedade pertencente a clientes ou provedores externos"},
+{id:"8.5.4",title:"8.5.4 Preservação"},
+{id:"8.5.5",title:"8.5.5 Atividades pós-entrega"},
+{id:"8.5.6",title:"8.5.6 Controle de mudanças"},
+{id:"8.6",title:"8.6 Liberação de produtos e serviços"},
+{id:"8.7",title:"8.7 Controle de saídas não conformes"}
+]},
+{id:"9",title:"9 Avaliação de desempenho",items:[
+{id:"9.1.1",title:"9.1.1 Monitoramento, medição, análise e avaliação – Generalidades"},
+{id:"9.1.2",title:"9.1.2 Satisfação do cliente"},
+{id:"9.1.3",title:"9.1.3 Análise e avaliação"},
+{id:"9.2",title:"9.2 Auditoria interna"},
+{id:"9.3",title:"9.3 Análise crítica pela direção"}
+]},
+{id:"10",title:"10 Melhoria",items:[
+{id:"10.1",title:"10.1 Melhoria – Generalidades"},
+{id:"10.2",title:"10.2 Não conformidade e ação corretiva"},
+{id:"10.3",title:"10.3 Melhoria contínua"}
+]}
+];
+
+const KEY="iso9001_checklist_v1";
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return{}}}
+function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
+
+function render(){
+const state=load();
+const cont=document.getElementById("checklist");
+cont.innerHTML="";
+data.forEach(cl=>{
+const div=document.createElement("div");
+div.className="clause";
+div.id="c"+cl.id;
+const h=document.createElement("div");
+h.className="clause-header";
+h.innerHTML=`<span>${cl.title}</span><span class="arrow">▶</span>`;
+h.onclick=()=>div.classList.toggle("open");
+const body=document.createElement("div");
+body.className="clause-body";
+cl.items.forEach(it=>{
+const st=state[it.id]||{};
+const item=document.createElement("div");
+item.className="item";
+item.innerHTML=`
+<div class="item-title">${it.title}</div>
+<div class="status-group">
+<label><input type="radio" name="s-${it.id}" value="conforme" ${st.status==="conforme"?"checked":""}> Conforme</label>
+<label><input type="radio" name="s-${it.id}" value="parcial" ${st.status==="parcial"?"checked":""}> Parcial</label>
+<label><input type="radio" name="s-${it.id}" value="nao" ${st.status==="nao"?"checked":""}> Não conforme</label>
+<label><input type="radio" name="s-${it.id}" value="na" ${st.status==="na"?"checked":""}> N/A</label>
+</div>
+<div class="fields">
+<div class="field"><label>Responsável</label><input type="text" data-id="${it.id}" data-f="resp" value="${st.resp||""}" placeholder="Nome"></div>
+<div class="field"><label>Prazo / Data</label><input type="date" data-id="${it.id}" data-f="prazo" value="${st.prazo||""}"></div>
+<div class="field" style="grid-column:1/-1"><label>Evidências / Registros</label><textarea data-id="${it.id}" data-f="evid" placeholder="Ex: Procedimento, ata, registro...">${st.evid||""}</textarea></div>
+<div class="field" style="grid-column:1/-1"><label>Observações / Plano de ação</label><textarea data-id="${it.id}" data-f="obs" placeholder="Gaps, ações...">${st.obs||""}</textarea></div>
+</div>`;
+body.appendChild(item);
+});
+div.appendChild(h);div.appendChild(body);cont.appendChild(div);
+});
+
+document.querySelectorAll('input[type=radio]').forEach(r=>{
+r.addEventListener("change",e=>{
+const id=e.target.name.replace("s-","");
+const s=load();s[id]=s[id]||{};s[id].status=e.target.value;save(s);upd();
+});
+});
+document.querySelectorAll("[data-f]").forEach(el=>{
+el.addEventListener("input",e=>{
+const id=e.target.dataset.id,f=e.target.dataset.f;
+const s=load();s[id]=s[id]||{};s[id][f]=e.target.value;save(s);
+});
+});
+upd();
+}
+
+function upd(){
+const s=load();let t=0,c=0,p=0,n=0,na=0,pend=0;
+data.forEach(cl=>cl.items.forEach(i=>{t++;const st=s[i.id]?.status;if(st==="conforme")c++;else if(st==="parcial")p++;else if(st==="nao")n++;else if(st==="na")na++;else pend++}));
+const done=c+p+n+na;const pct=t?Math.round(done/t*100):0;
+document.getElementById("progress-bar").style.width=pct+"%";
+document.getElementById("progress-text").textContent=pct+"%";
+document.getElementById("c-conf").textContent=c;
+document.getElementById("c-parc").textContent=p;
+document.getElementById("c-nao").textContent=n;
+document.getElementById("c-na").textContent=na;
+document.getElementById("c-pend").textContent=pend;
+}
+
+function expandAll(){document.querySelectorAll(".clause").forEach(c=>c.classList.add("open"))}
+function collapseAll(){document.querySelectorAll(".clause").forEach(c=>c.classList.remove("open"))}
+function clearAll(){if(confirm("Apagar todo o progresso?")){localStorage.removeItem(KEY);render()}}
+function exportData(){
+const blob=new Blob([JSON.stringify(load(),null,2)],{type:"application/json"});
+const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+a.download="checklist-iso9001-"+new Date().toISOString().slice(0,10)+".json";a.click();
+}
+render();
+</script>
+</body>
+</html>
